@@ -14,4 +14,8 @@ public class CategoryRequestDto {
     public void setName(String name) {
         this.name = name;
     }
+
+    public CategoryRequestDto(String name) {
+        this.name = name;
+    }
 }

@@ -9,6 +9,7 @@ import az.edu.ada.wm2.lab6.model.mapper.ProductMapper;
 import az.edu.ada.wm2.lab6.repository.CategoryRepository;
 import az.edu.ada.wm2.lab6.repository.ProductRepository;
 
+import az.edu.ada.wm2.lab6.service.CategoryServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,11 +50,11 @@ class CategoryServiceImplTest {
         Category category = new Category();
         category.setName("Food");
 
-        when(categoryRepository.save(any())).thenReturn(category);
+        Mockito.when(categoryRepository.save(ArgumentMatchers.any())).thenReturn(category);
 
         CategoryResponseDto result = categoryService.create(dto);
 
-        assertEquals("Food", result.getName());
+        Assertions.assertEquals("Food", result.getName());
     }
 
     @Test
@@ -61,11 +62,11 @@ class CategoryServiceImplTest {
         Category category = new Category();
         category.setName("Food");
 
-        when(categoryRepository.findAll()).thenReturn(List.of(category));
+        Mockito.when(categoryRepository.findAll()).thenReturn(List.of(category));
 
         List<CategoryResponseDto> result = categoryService.getAll();
 
-        assertEquals(1, result.size());
+        Assertions.assertEquals(1, result.size());
     }
 
     @Test
@@ -76,13 +77,13 @@ class CategoryServiceImplTest {
         Category category = new Category();
         Product product = new Product();
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        Mockito.when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        Mockito.when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         categoryService.addProduct(categoryId, productId);
 
-        assertTrue(product.getCategories().contains(category));
-        verify(productRepository).save(product);
+        Assertions.assertTrue(product.getCategories().contains(category));
+        Mockito.verify(productRepository).save(product);
     }
 
     @Test
@@ -94,20 +95,20 @@ class CategoryServiceImplTest {
         Product product = new Product();
         category.setProducts(List.of(product));
 
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(productMapper.toResponseDto(product)).thenReturn(new ProductResponseDto());
+        Mockito.when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        Mockito.when(productMapper.toResponseDto(product)).thenReturn(new ProductResponseDto());
 
         List<ProductResponseDto> result = categoryService.getProducts(categoryId);
 
-        assertEquals(1, result.size());
+        Assertions.assertEquals(1, result.size());
     }
 
     //OPTIONAL
     @Test
     void addProduct_shouldThrow_whenCategoryNotFound() {
-        when(categoryRepository.findById(any())).thenReturn(Optional.empty());
+        Mockito.when(categoryRepository.findById(ArgumentMatchers.any())).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class,
+        Assertions.assertThrows(RuntimeException.class,
                 () -> categoryService.addProduct(UUID.randomUUID(), UUID.randomUUID()));
     }
 }
