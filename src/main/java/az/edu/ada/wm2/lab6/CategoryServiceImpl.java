@@ -1,4 +1,4 @@
-package az.edu.ada.wm2.lab6.service;
+package az.edu.ada.wm2.lab6;
 
 import az.edu.ada.wm2.lab6.model.Category;
 import az.edu.ada.wm2.lab6.model.Product;
@@ -9,7 +9,7 @@ import az.edu.ada.wm2.lab6.model.mapper.CategoryMapper;
 import az.edu.ada.wm2.lab6.model.mapper.ProductMapper;
 import az.edu.ada.wm2.lab6.repository.CategoryRepository;
 import az.edu.ada.wm2.lab6.repository.ProductRepository;
-import az.edu.ada.wm2.lab6.service.ProductService;
+import az.edu.ada.wm2.lab6.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class CategoryServiceImpl implements ProductService.CategoryService {
+public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
@@ -51,20 +51,17 @@ public class CategoryServiceImpl implements ProductService.CategoryService {
     public CategoryResponseDto addProduct(UUID categoryId, UUID productId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         if (!product.getCategories().contains(category)) {
             product.getCategories().add(category);
         }
-
         if (!category.getProducts().contains(product)) {
             category.getProducts().add(product);
         }
 
         productRepository.save(product);
-
         return CategoryMapper.toResponseDto(category);
     }
 
@@ -72,7 +69,6 @@ public class CategoryServiceImpl implements ProductService.CategoryService {
     public List<ProductResponseDto> getProducts(UUID categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-
         return category.getProducts()
                 .stream()
                 .map(productMapper::toResponseDto)
